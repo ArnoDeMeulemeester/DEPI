@@ -25,3 +25,8 @@ print(link)
 #automatisch downloaden van file na link gevonden te hebben
 #download_url = 'http://web.mta.info/developers/' + link
 #urllib.request.urlretrieve(download_url)
+
+
+#https://cri.nbb.be/bc9/web/catalog?execution=e1s1
+#links zijn niet relatief dus zullen form moeten invullen om zo de site te bekomen
+
