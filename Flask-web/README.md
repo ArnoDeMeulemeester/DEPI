@@ -1,6 +1,6 @@
-# start env
+# start env:
 env\Scripts\activate.bat   
-# start website
+# start website:
 py app.py 
-# close env
+# close env:
 deactivate
