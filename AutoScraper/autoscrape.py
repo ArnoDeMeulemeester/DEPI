@@ -26,7 +26,7 @@ for row in ws.rows:
         "https://cri.nbb.be/bc9/web/catalog?execution=e1s1")
 
     try:
-        element1 = WebDriverWait(driver, 10).until(
+        element1 = WebDriverWait(driver, 5).until(
             EC.presence_of_element_located(
                 (By.ID, "page_searchForm:j_id3:generated_number_2_component"))
         )
@@ -36,7 +36,15 @@ for row in ws.rows:
         search.send_keys(Keys.ENTER)
     finally:
         print("Onderneming opzoeken was succesvol")
-        time.sleep(5)
+
+    try:
+        element = WebDriverWait(driver, 5).until(
+            EC.presence_of_element_located(
+                (By.LINK_TEXT, "Download"))
+        )
+        element.click()
+    finally:
+        print("onderneming PDF gedownload")
+        time.sleep(2)
         driver.quit()
 
-    time.sleep(2)
