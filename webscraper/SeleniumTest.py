@@ -20,15 +20,15 @@ PATH = "C:\Program Files (x86)\chromedriver.exe"
 driver = webdriver.Chrome(PATH)
 
 #driver.get("https://cri.nbb.be/bc9/web/catalog?execution=e2s1")
-driver.get("https://kbopub.economie.fgov.be/kbopub/zoeknummerform.html?lang=nl")
+driver.get("https://cri.nbb.be/bc9/web/catalog?execution=e1s1")
 
 try:
     element1 = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located(
-            (By.ID, "nummer"))
+            (By.ID, "page_searchForm:j_id3:generated_number_2_component"))
     )
     search = driver.find_element_by_id(
-        "nummer")
+        "page_searchForm:j_id3:generated_number_2_component")
     search.send_keys(nummer)
     search.send_keys(Keys.ENTER)
 finally:
