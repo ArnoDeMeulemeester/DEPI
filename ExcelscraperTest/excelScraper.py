@@ -1,3 +1,15 @@
+#kenmerken uit de excel te halen
+#Aantal werknemers
+#omzetcijfer
+#balanstotaal
+#framework voor duurzaamheid
+#b2b of b2c
+#sector
+
+
+
+
+
 from openpyxl import Workbook, load_workbook
 import time
 
