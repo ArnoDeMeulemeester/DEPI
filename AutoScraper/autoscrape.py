@@ -7,44 +7,48 @@ import time
 from openpyxl import Workbook, load_workbook
 
 
-
-
-wb = load_workbook("C:/Users/arvid/Documents/xcel/ondernemingsnummers.xlsx")
+wb = load_workbook("C:/Users/arvid/Documents/xcel/workfile.xlsx")
 ws = wb.get_sheet_by_name('Sheet1')
-
+wbwrite = load_workbook("C:/Users/arvid/Documents/xcel/test.xlsx")
+wbwritesheet = wbwrite.active
+r = 1
+c = 1
 
 for row in ws.rows:
+
     PATH = "C:\Program Files (x86)\chromedriver.exe"
     driver = webdriver.Chrome(PATH)
-    
-    print(row[0].value)
-    nummer = row[0].value
-    nummer = nummer.replace(" ", "")
-    print(nummer)
+
+    print(row[1].value)
+    naam = row[1].value
+    naam = naam.replace(" ", "")
+    print(naam)
 
     driver.get(
-        "https://cri.nbb.be/bc9/web/catalog?execution=e1s1")
+        "https://duckduckgo.com/")
 
     try:
         element1 = WebDriverWait(driver, 5).until(
             EC.presence_of_element_located(
-                (By.ID, "page_searchForm:j_id3:generated_number_2_component"))
+                (By.ID, "search_form_input_homepage"))
         )
         search = driver.find_element_by_id(
-            "page_searchForm:j_id3:generated_number_2_component")
-        search.send_keys(nummer)
+            "search_form_input_homepage")
+        search.send_keys(naam + ' belgie website')
         search.send_keys(Keys.ENTER)
     finally:
         print("Onderneming opzoeken was succesvol")
+        time.sleep(1)
 
     try:
-        element = WebDriverWait(driver, 5).until(
-            EC.presence_of_element_located(
-                (By.LINK_TEXT, "Download"))
-        )
-        element.click()
-    finally:
-        print("onderneming PDF gedownload")
-        time.sleep(2)
-        driver.quit()
+        link = driver.find_element_by_class_name(
+            "result__url__domain")
+        print(link.text)
 
+        wbwritesheet.cell(row=r, column=c).value = link.text
+        wbwrite.save("C:/Users/arvid/Documents/xcel/test.xlsx")
+
+    finally:
+        time.sleep(1)
+        driver.quit()
+        r += 1
