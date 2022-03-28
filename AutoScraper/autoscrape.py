@@ -43,10 +43,11 @@ for row in ws.rows:
     try:
         link = driver.find_element_by_class_name(
             "result__url__domain")
-        print(link.text)
 
-        wbwritesheet.cell(row=r, column=c).value = link.text
-        wbwrite.save("C:/Users/arvid/Documents/xcel/test.xlsx")
+        if link is not None:
+            print(link.text)
+            wbwritesheet.cell(row=r, column=c).value = link.text
+            wbwrite.save("C:/Users/arvid/Documents/xcel/test.xlsx")
 
     finally:
         time.sleep(1)
