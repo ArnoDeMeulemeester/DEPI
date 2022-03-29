@@ -26,4 +26,10 @@ https://www.dnb.com/
 username: root
 password: @Groep8depi
 
+## Inloggen op vm
 
+```powershell
+ssh -p 40006 root@vichogent.be
+
+change-me-48io23as
+```
