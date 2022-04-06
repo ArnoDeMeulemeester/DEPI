@@ -1,32 +1,10 @@
-#Testscenario van de tutorial
-
 import requests
-import urllib.request
-from bs4 import BeautifulSoup
+import bs4
 
-#url site
-url = 'http://web.mta.info/developers/turnstile.html'
+res = requests.get('https://google.com/search?q=' + 'arvid')
+res.raise_for_status()
 
-#Connect to URL
-response = requests.get(url)
-print(response)
-
-#Parsen van HTML en oplsaan in BS4-bject
-obj = BeautifulSoup(response.text, "html.parser")
-print(obj)
-
-#localiseer gezochte html-tag (hier link met download)
-obj.findAll('a')
-
-#bekijken hoe de downloadlink werkt en aanpassen waar nodig
-link = obj.findAll('a')[36]['href']
-print(link)
-
-#automatisch downloaden van file na link gevonden te hebben
-#download_url = 'http://web.mta.info/developers/' + link
-#urllib.request.urlretrieve(download_url)
-
-
-#https://cri.nbb.be/bc9/web/catalog?execution=e1s1
-#links zijn niet relatief dus zullen form moeten invullen om zo de site te bekomen
-
+soup = bs4.BeautifulSoup(res.text, "html.parser")
+print(soup.prettify())
+links = soup.select('.r a')
+print(links)

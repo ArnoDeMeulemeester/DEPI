@@ -1,29 +1,27 @@
-
+from googlesearch import search
 import requests
 import urllib.request
 from bs4 import BeautifulSoup
 from openpyxl import Workbook, load_workbook
+import time
 
-wb = load_workbook("C:/Users/arvid/Documents/xcel/test1.xlsx")
+wb = load_workbook("C:/Users/arvid/Documents/xcel/workfile.xlsx")
 ws = wb.get_sheet_by_name('Sheet1')
 wbwrite = load_workbook("C:/Users/arvid/Documents/xcel/test.xlsx")
 wbwritesheet = wbwrite.active
+
 r = 1
 c = 1
 
 for row in ws.rows:
-    naam = row[0].value
+    time.sleep(2)
+    naam = row[1].value
     naam = naam.replace(" ", "+")
     print(naam)
-
-    response = requests.get(
-        f'https://autocomplete.clearbit.com/v1/companies/suggest?query={naam}')
-    data = response.json()
-    
-    if len(data) > 0:
-        domain = data[0]['domain']
-        print(domain)
-
+    links = search(naam+" website Belgie",  tld='com', lang='en', num=1, start=0, stop=1, pause=2.0)
+    links = list(links)
+    domain = links[0]
+    print(domain)
     print("--------------------------------------")
 
     wbwritesheet.cell(row=r, column=c).value = domain
