@@ -2,4 +2,8 @@ body{
     margin: 0;
     color: #3283FF;
     background-color: #141617;
+    padding-left: 15px;
+}
+a:visited{
+    color: violet;
 }

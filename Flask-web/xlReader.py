@@ -15,7 +15,7 @@ def test():
 
 # reading xcel data 
 readingXcel = False
-loginfo = "staring"
+loginfo = "nothing"
 def GetxcelData():
     global readingXcel
     global loginfo
@@ -48,13 +48,14 @@ def GetxcelData():
 def GetxcelDataLogs():
     while True:
         global loginfo
-        if(loginfo=="staring"):
+        if(loginfo=="nothing"):
             json_data = json.dumps({'time': datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 'value': "No process running"})
-            loginfo = f"data:{json_data}\n\n"
-        if(loginfo=="error"):
+            yield f"data:{json_data}\n\n"
+        elif (loginfo=="error"):
             json_data = json.dumps({'time': datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 'value': "error reading excel"})
-            loginfo = f"data:{json_data}\n\n"
-        yield loginfo
+            yield f"data:{json_data}\n\n"
+        else:
+            yield loginfo
         time.sleep(1)
 
 def GetxcelDataStarted():
