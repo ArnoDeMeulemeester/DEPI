@@ -4,15 +4,400 @@
 <!--suppress JSUnresolvedLibraryURL -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
 <script>
+    // data for ui
+    var current_selected = null;
+    var opend_search_item = null;
+    // get KMO data
+    var kmo_data = '{{ kmo_data }}'
+    // port data to readeble JSON
+    var kmo_data_clean = kmo_data.replace(/&#34;/g, '"');
+    var kmo_data_json = JSON.parse(kmo_data_clean)
+    console.log(kmo_data_json)
+    // get Sector data
+    var sector_data = '{{ sector_data }}'
+    // port data to readeble JSON
+    var sector_data_clean = sector_data.replace(/&#34;/g, '"');
+    var sector_data_json = JSON.parse(sector_data_clean)
+    console.log(sector_data_json)
+    // info for querys 
+    var baseurl = '{{ baseurl }}'
+    baseurl = baseurl.replace("/KMOOverview","")
+    var search_query = null;
+    
+    // onload function:
+    $(function() {
+        create_table()
+    });
+    function create_table(){
+        //document.getElementById("p1").innerHTML = data;
+        const KMO_overview_table = document.getElementById('kmo_table');
+        KMO_overview_table.innerHTML = "";
+        //console.log(KMO_overview_table)
 
-</script>
-{% endblock %}
+        const keys = Object.keys(kmo_data_json);
+        for(let i = 0; i < keys.length; i++){
+            //console.log(kmo_data_json[keys[i]])
+            place_kmo(keys[i],KMO_overview_table)
+        };
+    }
+    function place_kmo(key,KMO_overview_table){
+        kmo_data_json[key]["onderneminsNr"] =key
+        // create kmo item 
+        let kmo = document.createElement("div");
+        kmo.classList.add("KMO_overview_table_item")
+        kmo.setAttribute("id", kmo_data_json[key].onderneminsNr);
+        kmo.innerText = kmo_data_json[key].naam
+        // add onclick event 
+        kmo.addEventListener('click', function(event) {
+            open_kmo_details(kmo_data_json[key])
+        })
+        // add arrow to item 
+        let kmo_arrow = document.createElement("div");
+        kmo_arrow.classList.add("KMO_overview_table_item_arrow")
+        kmo_arrow.innerText = ">"
+        kmo.appendChild(kmo_arrow)
+        //console.log(kmo)
+        KMO_overview_table.appendChild(kmo);
+    }
+    function open_kmo_details(kmo_info){
+        console.log(kmo_info)
+        // make info visable 
+        document.getElementById('kmo_info').style.visibility = "visible";
 
-{% block body %}
-<h1>overview page</h1>
+        // unselect pre item 
+        if(current_selected !== null && current_selected.innerText !== kmo_info.naam){
+            current_selected.classList.remove("KMO_overview_table_item_selected")
+        }
+        // if new item was selected
+        if(current_selected == null || current_selected.innerText !== kmo_info.naam){
+            // select new item 
+            current_selected = document.getElementById(kmo_info.onderneminsNr);
+            current_selected.classList.add("KMO_overview_table_item_selected")
+
+            // fill in info 
+            document.getElementById("Info_1").innerText = "TODO"
+            document.getElementById("Info_2").innerText = "TODO"
+
+            document.getElementById("Info_3").innerText = info_to_nullable(kmo_info.onderneminsNr) //onderneminsNr
+            document.getElementById("Info_4").innerText = info_to_nullable(kmo_info.naam)
+            document.getElementById("Info_5").innerText = info_to_nullable(kmo_info.email)
+            document.getElementById("Info_6").innerText = info_to_nullable(kmo_info.telefoonNr)
+            document.getElementById("Info_7").innerText = info_to_nullable(kmo_info.webAdres)
+            document.getElementById("Info_8").innerText = info_to_nullable(kmo_info.personeelsbestanden)
+            document.getElementById("Info_9").innerText = info_to_nullable(kmo_info.wcm)
+            document.getElementById("Info_10").innerText = info_to_nullable(kmo_info.beursnotatie)
+            document.getElementById("Info_11").innerText = info_to_nullable(kmo_info.duurzaamheid)
+            document.getElementById("Info_12").innerText = info_to_nullable(kmo_info.b2b)
+            document.getElementById("Info_13").innerText = fill_sector_info(kmo_info.ibid)
+            //document.getElementById("Info_14").innerText = fill_locatie_info(kmo_info.LocatieID)
+            // set Location info
+            if(kmo_info.locatie_object === undefined){
+                fill_locatie_info(kmo_info.LocatieID,kmo_info.onderneminsNr)
+            }else{
+                document.getElementById("Info_14").innerText = locatie_to_string(kmo_info.locatie_object)
+                fill_locatie_info(kmo_info.LocatieID,kmo_info.onderneminsNr)
+            }
+            // set Balans info
+            if(kmo_info.balans_object === undefined){
+                fill_balans_info(kmo_info.BalansID,kmo_info.onderneminsNr)
+            }else{
+                document.getElementById("Info_15").innerText = balans_to_string(kmo_info.locatie_object) 
+                fill_balans_info(kmo_info.BalansID,kmo_info.onderneminsNr)
+            }
+            
+        }
+
+        // if info is missing go and get it
+    }
+    function info_to_nullable(text){
+        if(text === null){
+            return "No info"
+        }
+            return text
+    }
+    function fill_sector_info(ID){
+        if(ID === null){
+            return "No info"
+        }else{
+            let data = sector_data_json[ID]
+            return data.sector
+        }
+    }
+    function fill_locatie_info(locatie_ID,kmo_ID){
+        if(locatie_ID === null){
+            document.getElementById("Info_14").innerText =  "No info"
+        }else{
+            console.log("URL: "+baseurl+"/getLocationInfo/"+locatie_ID)
+            $.ajax({
+               type:"GET",
+               dataType: "json",
+               //data:{LocationID: ID},
+               url:baseurl+"/getLocationInfo/"+locatie_ID,
+               success:function(data)
+               {
+                    console.log(data)
+                    //console.log(data[0])
+                    document.getElementById("Info_14").innerText =  locatie_to_string(data[0])
+                    kmo_data_json[kmo_ID].locatie_object = data[0]
+               },
+               error:function() {
+                    document.getElementById("Info_14").innerText =  "No info"
+               },
+               timeout: 5000
+            });
+        }
+    }
+    function fill_balans_info(balans_ID,kmo_ID){
+        if(balans_ID === null){
+            document.getElementById("Info_15").innerText =  "No info"
+        }else{
+            console.log("URL: "+baseurl+"/getBalansInfo/"+balans_ID)
+            $.ajax({
+               type:"GET",
+               dataType: "json",
+               //data:{LocationID: ID},
+               url:baseurl+"/getBalansInfo/"+balans_ID,
+               success:function(data)
+               {
+                    console.log(data)
+                    //console.log(data[0])
+                    document.getElementById("Info_15").innerText =  balans_to_string(data[0])
+                    kmo_data_json[kmo_ID].balans_object = data[0]
+               },
+               error:function() {
+                    document.getElementById("Info_15").innerText =  "No info"
+               },
+               timeout: 5000
+            });
+        }
+    }
+
+    function locatie_to_string(locatie){
+        let str = "Adres: "
+        str += locatie.adres
+        str += " ,Postcode: "
+        str += locatie.postcode
+        str += " ,Gemente: "
+        str += locatie.gemeente
+        return str
+    }
+    function balans_to_string(balans){
+        let str = "bvdIDnr: "
+        str += balans.bvdIDnr
+        str += " ,omzet: "
+        str += balans.omzet
+        str += " ,balanstotaal: "
+        str += balans.balanstotaal
+        str += " ,nettoToegevoegdeWaarde: "
+        str += balans.nettoToegevoegdeWaarde
+        return str
+    }
+
+
+    // Search bar functions
+    function open_search_item(element){
+        element.classList.add("KMO_overview_search_item_open")
+        opend_search_item = element;
+        document.getElementById("search_backdrop").style.visibility = "visible";
+    }
+
+    function on_search_field_leave(element_base_ID,search_attribute){
+        let attribute = search_attribute;
+        let type = document.getElementById(element_base_ID+"_select").value;
+        let input = document.getElementById(element_base_ID+"_input").value;
+
+        if(input !== ""){
+            // set button to reflect search 
+            opend_search_item.classList.add("KMO_overview_search_item_filled")
+            console.log(search_attribute)
+            if(search_query == null){
+                search_query = {"placeholder":"ignore me"}
+            }
+            search_query[attribute] = {"Type":type,"input":input}
+            
+        }else{
+            // remove button style from search
+            opend_search_item.classList.remove("KMO_overview_search_item_filled")
+            delete search_query[attribute]; 
+
+        }
+        console.log(search_query)
+    }
+
+    function close_search_item(element){
+        opend_search_item.classList.remove("KMO_overview_search_item_open")
+        element.style.visibility = "hidden";
+        
+    }
+
+    async function do_search(){
+        delete search_query["placeholder"]; 
+        console.log(search_query)
+        console.log("URL: "+baseurl+"/search/KMO")
+      
+        const response = await fetch(baseurl+"/search/KMO", {
+        method: 'POST',
+        body: JSON.stringify(search_query), 
+        headers: {'Content-Type': 'application/json'}
+        });
+        const myJson = await response.json(); //extract JSON from the http response
+        console.log(myJson)
+        // reset view
+        kmo_data_json = myJson
+        document.getElementById('kmo_info').style.visibility = "hidden";
+        create_table()
+    }
+
+    
+/*
 {% for table in tables %}
             {{titles[loop.index]}}
             {{ table|safe }}
 {% endfor %}
+        transform: translateY(-50%) scaleY(-1);
+         <input type="text" class="KMO_overview_searchBar" id="searchbar" name="fname" placeholder="Search">
+       
+*/
+</script>
+{% endblock %}
 
+{% block body %}
+<div  class="KMO_overview_container">
+    <div class="KMO_overview_search" id="kmo_search">
+        <div class="KMO_overview_search_container"> 
+            <button class="KMO_overview_search_item" id="search_onderneminsNr" onclick="open_search_item(this)">onderneminsNr 
+                <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="search_item_icon"><path d="M15.875 9l-3.88 3.88L8.115 9a.996.996 0 1 0-1.41 1.41l4.59 4.59c.39.39 1.02.39 1.41 0l4.59-4.59a.996.996 0 0 0 0-1.41c-.39-.38-1.03-.39-1.42 0z"></path></svg>
+                <div class="KMO_overview_search_item_field_container" id="search_field_container">
+                    <select name="search_onderneminsNr" id="search_onderneminsNr_select"  onChange="on_search_field_leave('search_onderneminsNr','onderneminsNr')">
+                        <option value="Contains">Contains</option> 
+                        <option value="Starts_with">Starts with</option>
+                        <option value="Matches">Matches</option>
+                    </select>
+                    <input type="text" name="onderneminsNr" id="search_onderneminsNr_input" placeholder="text" onblur="on_search_field_leave('search_onderneminsNr','onderneminsNr')">
+                </div>
+            </button>
+            <button class="KMO_overview_search_item" id="search_naam" onclick="open_search_item(this)">naam
+                <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="search_item_icon"><path d="M15.875 9l-3.88 3.88L8.115 9a.996.996 0 1 0-1.41 1.41l4.59 4.59c.39.39 1.02.39 1.41 0l4.59-4.59a.996.996 0 0 0 0-1.41c-.39-.38-1.03-.39-1.42 0z"></path></svg>
+                <div class="KMO_overview_search_item_field_container" id="search_field_container">
+                    <select name="search_naam" id="search_naam_select"  onChange="on_search_field_leave('search_naam','naam')">
+                        <option value="Contains">Contains</option>
+                        <option value="Starts_with">Starts with</option>
+                        <option value="Matches">Matches</option>
+                    </select>
+                    <input type="text" name="onderneminsNr" id="search_naam_input" placeholder="text" onblur="on_search_field_leave('search_naam','naam')">
+                </div>
+            </button>
+            <button class="KMO_overview_search_item" id="search_email" onclick="open_search_item(this)">email
+                <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="search_item_icon"><path d="M15.875 9l-3.88 3.88L8.115 9a.996.996 0 1 0-1.41 1.41l4.59 4.59c.39.39 1.02.39 1.41 0l4.59-4.59a.996.996 0 0 0 0-1.41c-.39-.38-1.03-.39-1.42 0z"></path></svg>
+                <div class="KMO_overview_search_item_field_container" id="search_field_container"> 
+                    <select name="search_email" id="search_email_select"  onChange="on_search_field_leave('search_email','email')">
+                        <option value="Contains">Contains</option>
+                        <option value="Starts_with">Starts with</option>
+                        <option value="Matches">Matches</option>
+                    </select>
+                    <input type="text" name="onderneminsNr" id="search_email_input" placeholder="text" onblur="on_search_field_leave('search_email','email')">
+                </div>
+            </button>
+            <button class="KMO_overview_search_item" id="search_telefoonNr" onclick="open_search_item(this)">telefoonNr
+                <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="search_item_icon"><path d="M15.875 9l-3.88 3.88L8.115 9a.996.996 0 1 0-1.41 1.41l4.59 4.59c.39.39 1.02.39 1.41 0l4.59-4.59a.996.996 0 0 0 0-1.41c-.39-.38-1.03-.39-1.42 0z"></path></svg>
+                <div class="KMO_overview_search_item_field_container" id="search_field_container"> 
+                    <select name="search_telefoonNr" id="search_telefoonNr_select"  onChange="on_search_field_leave('search_telefoonNr','telefoonNr')">
+                        <option value="Contains">Contains</option>
+                        <option value="Starts_with">Starts with</option>
+                        <option value="Matches">Matches</option>
+                    </select>
+                    <input type="text" name="onderneminsNr" id="search_telefoonNr_input" placeholder="text" onblur="on_search_field_leave('search_telefoonNr','telefoonNr')">
+                </div>
+            </button>
+            <button class="KMO_overview_search_item" id="search_webAdres" onclick="open_search_item(this)">webAdres
+                <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="search_item_icon"><path d="M15.875 9l-3.88 3.88L8.115 9a.996.996 0 1 0-1.41 1.41l4.59 4.59c.39.39 1.02.39 1.41 0l4.59-4.59a.996.996 0 0 0 0-1.41c-.39-.38-1.03-.39-1.42 0z"></path></svg>
+                <div class="KMO_overview_search_item_field_container" id="search_field_container"> 
+                    <select name="search_webAdres" id="search_webAdres_select"  onChange="on_search_field_leave('search_webAdres','webAdres')">
+                        <option value="Contains">Contains</option>
+                        <option value="Starts_with">Starts with</option>
+                        <option value="Matches">Matches</option>
+                    </select>
+                    <input type="text" name="onderneminsNr" id="search_webAdres_input" placeholder="text" onblur="on_search_field_leave('search_webAdres','webAdres')">
+                </div>
+            </button>
+            <button class="KMO_overview_search_item" id="search_personeelsbestanden" onclick="open_search_item(this)">personeelsbestanden
+                <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="search_item_icon"><path d="M15.875 9l-3.88 3.88L8.115 9a.996.996 0 1 0-1.41 1.41l4.59 4.59c.39.39 1.02.39 1.41 0l4.59-4.59a.996.996 0 0 0 0-1.41c-.39-.38-1.03-.39-1.42 0z"></path></svg>
+                <div class="KMO_overview_search_item_field_container" id="search_field_container"> 
+                    <select name="search_personeelsbestanden" id="search_personeelsbestanden_select"  onChange="on_search_field_leave('search_personeelsbestanden','email')">
+                        <option value="Contains">Contains</option>
+                        <option value="Starts_with">Starts with</option>
+                        <option value="Matches">Matches</option>
+                    </select>
+                    <input type="text" name="onderneminsNr" id="search_personeelsbestanden_input" placeholder="text" onblur="on_search_field_leave('search_personeelsbestanden','email')">
+                </div>
+            </button>
+            <button class="KMO_overview_search_item" id="search_wcm" onclick="open_search_item(this)">wcm
+                <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="search_item_icon"><path d="M15.875 9l-3.88 3.88L8.115 9a.996.996 0 1 0-1.41 1.41l4.59 4.59c.39.39 1.02.39 1.41 0l4.59-4.59a.996.996 0 0 0 0-1.41c-.39-.38-1.03-.39-1.42 0z"></path></svg>
+                <div class="KMO_overview_search_item_field_container" id="search_field_container"> </div>
+            </button>
+            <button class="KMO_overview_search_item" id="search_beursnotatie" onclick="open_search_item(this)">beursnotatie
+                <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="search_item_icon"><path d="M15.875 9l-3.88 3.88L8.115 9a.996.996 0 1 0-1.41 1.41l4.59 4.59c.39.39 1.02.39 1.41 0l4.59-4.59a.996.996 0 0 0 0-1.41c-.39-.38-1.03-.39-1.42 0z"></path></svg>
+                <div class="KMO_overview_search_item_field_container" id="search_field_container"> </div>
+            </button>
+            <button class="KMO_overview_search_item" id="search_duurzaamheid" onclick="open_search_item(this)">duurzaamheid
+                <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="search_item_icon"><path d="M15.875 9l-3.88 3.88L8.115 9a.996.996 0 1 0-1.41 1.41l4.59 4.59c.39.39 1.02.39 1.41 0l4.59-4.59a.996.996 0 0 0 0-1.41c-.39-.38-1.03-.39-1.42 0z"></path></svg>
+                <div class="KMO_overview_search_item_field_container" id="search_field_container"> </div>
+            </button>
+            <button class="KMO_overview_search_item" id="search_b2b" onclick="open_search_item(this)">b2b
+                <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="search_item_icon"><path d="M15.875 9l-3.88 3.88L8.115 9a.996.996 0 1 0-1.41 1.41l4.59 4.59c.39.39 1.02.39 1.41 0l4.59-4.59a.996.996 0 0 0 0-1.41c-.39-.38-1.03-.39-1.42 0z"></path></svg>
+                <div class="KMO_overview_search_item_field_container" id="search_field_container"> 
+                    <select name="search_b2b" id="search_b2b_select"  onChange="on_search_field_leave('search_b2b','b2b')">
+                        <option value="Contains">Contains</option>
+                        <option value="Starts_with">Starts with</option>
+                        <option value="Matches">Matches</option>
+                    </select>
+                    <input type="text" name="onderneminsNr" id="search_b2b_input" placeholder="text" onblur="on_search_field_leave('search_b2b','b2b')">
+                </div>
+            </button>
+            <button class="KMO_overview_search_item" id="search_Sector" onclick="open_search_item(this)">Sector
+                <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="search_item_icon"><path d="M15.875 9l-3.88 3.88L8.115 9a.996.996 0 1 0-1.41 1.41l4.59 4.59c.39.39 1.02.39 1.41 0l4.59-4.59a.996.996 0 0 0 0-1.41c-.39-.38-1.03-.39-1.42 0z"></path></svg>
+                <div class="KMO_overview_search_item_field_container" id="search_field_container"> </div>
+            </button>
+            <button class="KMO_overview_search_item" id="search_Locatie" onclick="open_search_item(this)">Locatie
+                <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="search_item_icon"><path d="M15.875 9l-3.88 3.88L8.115 9a.996.996 0 1 0-1.41 1.41l4.59 4.59c.39.39 1.02.39 1.41 0l4.59-4.59a.996.996 0 0 0 0-1.41c-.39-.38-1.03-.39-1.42 0z"></path></svg>
+                <div class="KMO_overview_search_item_field_container" id="search_field_container"> </div>
+            </button>
+            <button class="KMO_overview_search_item" id="search_Balans" onclick="open_search_item(this)">Balans
+                <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="search_item_icon"><path d="M15.875 9l-3.88 3.88L8.115 9a.996.996 0 1 0-1.41 1.41l4.59 4.59c.39.39 1.02.39 1.41 0l4.59-4.59a.996.996 0 0 0 0-1.41c-.39-.38-1.03-.39-1.42 0z"></path></svg>
+                <div class="KMO_overview_search_item_field_container" id="search_field_container"> </div>
+            </button>
+            <div class="KMO_overview_search_item_back" id="search_backdrop" onclick="close_search_item(this)"> </div>
+        </div>
+        <br/>
+        <div class="KMO_overview_search_container">
+            <button class="KMO_overview_search_start" id="start_search" onclick="do_search()">Search</button>
+        </div>
+    </div>
+    <div class="KMO_overview_table" id="kmo_table">Loading... </div>
+    <div class="KMO_overview_info" id="kmo_info">
+        <div class="KMO_overview_info_titel">Score: </div>
+        
+        <div class="KMO_overview_info_item">Menselijk Kapitaal:<span class="KMO_overview_info_item_score" id="Info_1">Loading... </span></div>
+        <div class="KMO_overview_info_item">Natuurlijk Kapitaal:<span class="KMO_overview_info_item_score" id="Info_2">Loading... </span></div>
+
+        <div class="KMO_overview_info_titel">Info: </div>
+
+        <div class="KMO_overview_info_item">onderneminsNr:<span id="Info_3">Loading... </span></div>
+        <div class="KMO_overview_info_item">naam:<span id="Info_4">Loading... </span></div>
+        <div class="KMO_overview_info_item">email:<span id="Info_5">Loading... </span></div>
+        <div class="KMO_overview_info_item">telefoonNr:<span id="Info_6">Loading... </span></div>
+        <div class="KMO_overview_info_item">webAdres:<span id="Info_7">Loading... </span></div>
+        <div class="KMO_overview_info_item">personeelsbestanden:<span id="Info_8">Loading... </span></div>
+        <div class="KMO_overview_info_item">wcm:<span id="Info_9">Loading... </span></div>
+        <div class="KMO_overview_info_item">beursnotatie:<span id="Info_10">Loading... </span></div>
+        <div class="KMO_overview_info_item">duurzaamheid:<span id="Info_11">Loading... </span></div>
+        <div class="KMO_overview_info_item">b2b:<span id="Info_12">Loading... </span></div>
+        <div class="KMO_overview_info_item">Sector:<span id="Info_13">Loading... </span></div>
+        <div class="KMO_overview_info_item">Locatie info:<span id="Info_14">Loading... </span></div>
+        <div class="KMO_overview_info_item">Balans info:<span id="Info_15">Loading... </span></div>
+
+
+
+    </div>
+</div>
 {% endblock %}

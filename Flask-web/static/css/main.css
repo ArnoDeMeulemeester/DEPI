@@ -1,9 +1,135 @@
 body{
     margin: 0;
-    color: #3283FF;
-    background-color: #141617;
-    padding-left: 15px;
+    color: black;
+    background-color: rgb(243, 243, 243);
 }
 a:visited{
     color: violet;
+}
+.KMO_overview_container{
+    display: grid;
+    grid-template-columns: 35% 65%;
+    grid-template-rows: 20% 80%;
+    width: 97vw;
+    margin-left: 1vw;
+    height: 90vh;
+    margin-top: 1vh;
+}
+.KMO_overview_table{
+    overflow-y: auto;
+    border: 2px solid black;
+    box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.438);
+}
+.KMO_overview_table_item{
+    border-bottom: 1px solid black;
+    font-size: 1.25rem;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    cursor: pointer;
+    background-color: rgb(211, 211, 211);
+}
+.KMO_overview_table_item_arrow{
+    float: right;
+    font-weight:bolder;
+    font-size: 1.5rem;
+    padding-right: 5px;
+}
+.KMO_overview_table_item_selected{
+    background-color: rgb(143, 143, 143)!important;
+}
+.KMO_overview_search{
+    padding: 5px;
+    grid-column-start: 1;
+    grid-column-end: 3;
+}
+.KMO_overview_info{
+    padding: 20px;
+    overflow-y: auto;
+    visibility: hidden;
+}
+.KMO_overview_info_titel{
+    font-size: 2rem;
+    border-bottom: 1px solid black;
+    margin-bottom: 8px;
+}
+.KMO_overview_info_item{
+    font-size: 1.25rem;
+    margin-bottom: 8px;
+    margin-left: 5px;
+}
+.KMO_overview_info_item span{
+    margin-left: 5px;
+}
+.KMO_overview_info_item_score{
+    font-size: 2rem;
+}
+.KMO_overview_searchBar{
+    width: 40vw;
+    height: 3vh;
+    font-size: 1.25rem;
+    border-radius: 15px;
+    padding-left: 10px;
+}
+.KMO_overview_search_container{
+    display: flex;
+    flex-wrap: wrap ;
+    justify-content: center;
+    gap: 15px;
+}
+.KMO_overview_search_item{
+    border: 1px solid black ;
+    font-size: 1.25rem;
+    border-radius: 10px;
+    padding: 1px;
+    padding-left: 10px;
+    padding-right: 10px;
+    cursor: pointer;
+}
+.KMO_overview_search_start{
+    border: 1px solid black ;
+    font-size: 1.5rem;
+    border-radius: 10px;
+    padding: 1px;
+    padding-left: 10px;
+    padding-right: 10px;
+    cursor: pointer;
+}
+.search_item_icon{
+    float: right;
+}
+.KMO_overview_search_item_open .search_item_icon{
+    transform: scaleY(-1);
+}
+.KMO_overview_search_item_back{
+    background-color: rgba(0, 0, 0, 0.027);
+    z-index:2;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    position:fixed;
+    top: 0;
+    left: 0;
+    visibility: hidden;
+}
+.KMO_overview_search_item_field_container{
+    border: 1px solid black;
+    z-index:3;
+    padding: 15px;
+    border-radius: 15px;
+    background-color: rgb(212, 212, 212);
+    position: absolute;
+    visibility: hidden;
+    
+}
+.KMO_overview_search_item_open .KMO_overview_search_item_field_container{
+    visibility: visible;
+}
+.KMO_overview_search_item_filled{
+    border: 2px solid rgb(3, 150, 3)!important;
+    background-color: rgba(0, 128, 0, 0.082);
+    padding: 0;
+    padding-left: 9px;
+    padding-right: 9px;
 }
