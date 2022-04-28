@@ -40,5 +40,6 @@ def create_dict(clean_list):
 if __name__ != '__main__':
         pass
 else:
-    url = "https://www.thedailystar.net/"
+    url = "https://itsmycode.com/importerror-no-module-named-requests/"
     start(url)
+
