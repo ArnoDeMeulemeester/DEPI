@@ -2,6 +2,7 @@ from asyncio.windows_events import NULL
 from distutils.log import debug
 from flask import Flask, render_template, request, url_for, Response, stream_with_context
 from xlReader import test,GetxcelDataLogs,GetxcelData,GetxcelDataStarted
+from sqlFuncions import translate_attribute,translate_search_to_sql
 import json
 import random
 import time
@@ -43,17 +44,17 @@ def KMOOverviewBase():
     db_data_KMO.set_index('onderneminsNr',inplace=True)
     db_data_sector = _MYSQL('''SELECT * FROM dep.Sector limit 100;''')
     db_data_sector.set_index('sectorID',inplace=True)
+    # replace score numbers with leters 
+    db_data_KMO['beursnotatie'].replace(to_replace='1', value='A',inplace=True)
+    db_data_KMO['beursnotatie'].replace(to_replace='2', value='B',inplace=True)
+    db_data_KMO['beursnotatie'].replace(to_replace='3', value='C',inplace=True)
+    db_data_KMO['duurzaamheid'].replace(to_replace='1', value='A',inplace=True)
+    db_data_KMO['duurzaamheid'].replace(to_replace='2', value='B',inplace=True)
+    db_data_KMO['duurzaamheid'].replace(to_replace='3', value='C',inplace=True)
     #return db_data_KMO.to_json(orient="index",force_ascii=True,index=True)
     return render_template('KMOOverview.html', kmo_data=db_data_KMO.to_json(orient="index",force_ascii=True,index=True), sector_data=db_data_sector.to_json(orient="index",force_ascii=True,index=True), baseurl=request.base_url)
     #return render_template('KMOOverview.html', tables=[db_data.to_html(classes='data')], titles=db_data.columns.values)
 
-@app.route('/KMOOverview/<path:path>')
-def KMOOverviewSector(path):
-    # check if path contains a valid sector 
-
-    # get KMO's by sector
-    db_data = _MYSQL('''SELECT * FROM dep.KMO;''')# use  "limit 100, 200" to get more from 100 to 200
-    return db_data.to_json(orient="index")
 
 # Sector Overview pages
 
@@ -75,27 +76,17 @@ def GetBalansByID(path):
 @app.route('/search/KMO', methods = ['GET', 'POST'])
 def searchKMOs(): 
     raw_data = request.get_json()
-    sql_statement = ''
-    first = True
-    posibilities = ['onderneminsNr','naam','email','telefoonNr','webAdres','personeelsbestanden','b2b']
-    for pos in posibilities:
-        if(pos in raw_data):
-            if(first):
-                sql_statement+='WHERE '+pos
-                first=False
-            else:
-                sql_statement+=' AND '+pos+' '
-
-            if(raw_data[pos]['Type'] == 'Contains'):
-                sql_statement+= " LIKE '%"+raw_data[pos]['input']+"%'"
-            if(raw_data[pos]['Type'] == 'Starts_with'):
-                sql_statement+= " LIKE '"+raw_data[pos]['input']+"%'"
-            if(raw_data[pos]['Type'] == 'Matches'):
-                sql_statement+= "='"+raw_data[pos]['input']+"'"
-        
+         
     
-    db_data_KMO = _MYSQL('''SELECT * FROM dep.KMO {}  limit 100 ;'''.format(sql_statement))
+    db_data_KMO = _MYSQL(translate_search_to_sql(raw_data))
     db_data_KMO.set_index('onderneminsNr',inplace=True)
+    db_data_KMO['beursnotatie'].replace(to_replace='1', value='A',inplace=True)
+    db_data_KMO['beursnotatie'].replace(to_replace='2', value='B',inplace=True)
+    db_data_KMO['beursnotatie'].replace(to_replace='3', value='C',inplace=True)
+    db_data_KMO['duurzaamheid'].replace(to_replace='1', value='A',inplace=True)
+    db_data_KMO['duurzaamheid'].replace(to_replace='2', value='B',inplace=True)
+    db_data_KMO['duurzaamheid'].replace(to_replace='3', value='C',inplace=True)
+    # check if need to reorder
     return db_data_KMO.to_json(orient="index",force_ascii=True,index=True)
     #return sql_statement
 
@@ -131,6 +122,7 @@ def XcelDatastart():
 @app.route('/<path:path>')
 def index(path):
     return render_template('index.html')
+
 
 if __name__ == "__main__":
     app.run(debug=True)
