@@ -1,7 +1,34 @@
+from openpyxl import Workbook, load_workbook
+import time
 import requests
 from bs4 import BeautifulSoup
 import operator
 from collections import Counter
+import pandas as pd
+
+#read excel file
+df =  pd.read_excel('/Users/lauraingelbrecht/Downloads/toegepaste informatica jaar 2/Semester 2/Data Engineering Project I/Map1.xlsx')
+#print(df) 
+wb = Workbook()
+wb = load_workbook("/Users/lauraingelbrecht/Downloads/toegepaste informatica jaar 2/Semester 2/Data Engineering Project I/Map1.xlsx")
+ws = wb.sheetnames('Sheet1')
+
+
+for row in ws.rows:
+    print(row[0].value)
+    time.sleep(0.25)
+
+producten_alle_paginas = []
+
+for i in range(1,15):
+    response = requests.get(f"") #todo url moet er in komen
+    content = response.content
+    parser = BeautifulSoup(content, 'html.parser')
+    body = parser.body
+    producten = body.find_all(class_="p")
+    producten_alle_paginas.extend(producten)
+    
+len(producten_alle_paginas)
 
 #meest voorkomende woorden in een website
 
