@@ -6,13 +6,35 @@ body{
 a:visited{
     color: violet;
 }
+.navbar{
+    height: 3vh;
+    border: 1px solid black;
+    background-color: rgba(2, 2, 177, 0.308);
+}
+.navbar_item{
+ font-size: 2.5vh;
+ float: left;
+ padding-left: 5px;
+ padding-right: 5px;
+ cursor: pointer;
+ height: 100%;
+ margin-right: 10px;
+ margin-left: 10px;
+ color: black;
+}
+.navbar_item:hover{
+    background-color: #0000003f;
+}
+.container{
+    height: 95vh;
+}
 .KMO_overview_container{
     display: grid;
     grid-template-columns: 35% 65%;
     grid-template-rows: 20% 80%;
     width: 98vw;
     padding-left: 1vw;
-    height: 98vh;
+    height: 100%;
     padding-top: 1vh;
     min-width: 1100px;
     min-height: 600px;

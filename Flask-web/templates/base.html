@@ -6,6 +6,13 @@
     {% block head %}{% endblock %}
 </head>
 <body>
-    {% block body %}{% endblock %}
+    <div class="navbar"> 
+        <a href="/"><div  class="navbar_item"> Home </div> </a>
+        <a href="/KMOOverview"><div  class="navbar_item"> KMO </div> </a>
+        <a href="/SectorOverview"><div  class="navbar_item"> Sector </div> </a>
+    </div>
+    <div class="container">
+        {% block body %}{% endblock %}
+    </div>
 </body>
 </html>

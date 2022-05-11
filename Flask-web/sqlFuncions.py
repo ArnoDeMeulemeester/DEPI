@@ -1,48 +1,77 @@
+from cmath import log
+import numpy as np
 
+where_sql = ['Naam','Menselijk Kapitaal','Natuurlijk Kapitaal','Ondernemings nummer','Email','Telefoon nummer','WebAdres','Aantal werknemers','WCM','B2B']
+sector_sql = ['Sector']
+adres_sql = ['Adres','Postcode','Gemente']
+bank_sql = ['Bank ID','Omzet','Balanstotaal','Netto Toegevoegde Waarde']
+first = True
 def translate_search_to_sql(raw_data):
-    sql_statement = ''
+    global where_sql
+    global sector_sql
+    global adres_sql
+    global bank_sql
+    global first
+    sql_statement = 'SELECT * FROM dep.KMO k'
+    for item in raw_data:
+        if(item in sector_sql):
+           sql_statement+=" INNER JOIN dep.Sector s ON k.ibid = s.sectorID "
+        if(item in adres_sql):
+           sql_statement+=" INNER JOIN dep.Locatie l ON k.LocatieID = l.adres "
+        if(item in bank_sql):
+           sql_statement+=" INNER JOIN dep.Balans b ON k.BalansID = b.bvdIDnr "
     first = True
-    where_sql = ['Naam','Menselijk Kapitaal','Natuurlijk Kapitaal','Ondernemings nummer','Email','Telefoon nummer','WebAdres','Personeelsbestanden','WCM','B2B']
-    join_sql = ['Sector','Adres','Postcode','Gemente','BTW nr','Omzet','Balanstotaal','Netto Toegevoegde Waarde']
-
-    # add join sql 
-
-    
     # add all where sql 
-    for pos in where_sql:
+    for pos in np.concatenate([where_sql,sector_sql,adres_sql,bank_sql]):
         if(pos in raw_data):
             if(raw_data[pos]['Type'] == 'Contains'):
-                sql_statement+=where_and(first,pos)
+                sql_statement+=where_and(pos)
                 sql_statement+= " LIKE '%"+raw_data[pos]['input']+"%'"
             if(raw_data[pos]['Type'] == 'Starts with'):
-                sql_statement+=where_and(first,pos)
+                sql_statement+=where_and(pos)
                 sql_statement+= " LIKE '"+raw_data[pos]['input']+"%'"
             if(raw_data[pos]['Type'] == 'Ends with'):
-                sql_statement+=where_and(first,pos)
+                sql_statement+=where_and(pos)
                 sql_statement+= " LIKE '%"+raw_data[pos]['input']+"'"
             if(raw_data[pos]['Type'] == 'Matches'):
-                sql_statement+=where_and(first,pos)
+                sql_statement+=where_and(pos)
                 sql_statement+= "='"+raw_data[pos]['input']+"'"
             if(raw_data[pos]['Type'] == '='):
-                sql_statement+=where_and(first,pos)
-                sql_statement+= "='"+score_to_number(raw_data[pos]['input'])+"'"
+                sql_statement+=where_and(pos)
+                sql_statement+= "="+raw_data[pos]['input']
             if(raw_data[pos]['Type'] == '<='):
-                sql_statement+=where_and(first,pos)
-                sql_statement+= ">='"+score_to_number(raw_data[pos]['input'])+"'"
+                sql_statement+=where_and(pos)
+                sql_statement+= "<="+raw_data[pos]['input']
             if(raw_data[pos]['Type'] == '>='):
-                sql_statement+=where_and(first,pos)
-                sql_statement+= "<='"+score_to_number(raw_data[pos]['input'])+"'"
+                sql_statement+=where_and(pos)
+                sql_statement+= ">="+raw_data[pos]['input']
 
-    print('''SELECT * FROM dep.KMO {}  limit 100 ;'''.format(sql_statement))
-    return  '''SELECT * FROM dep.KMO {}  limit 100 ;'''.format(sql_statement)
+    print('''{}  limit 100 ;'''.format(sql_statement))
+    return  '''{}  limit 100 ;'''.format(sql_statement)
+    
 
-def where_and(first,pos):
+
+
+def where_and(pos):
+    global first
     att = translate_attribute(pos)
     if(first):
         first=False
-        return 'WHERE '+att
+        return ' WHERE '+pos_to_join_letter(pos)+'.'+att
     else:
-        return ' AND '+att+' '
+        return ' AND '+pos_to_join_letter(pos)+'.'+att+' '
+
+def pos_to_join_letter(pos):
+    global sector_sql
+    global adres_sql
+    global bank_sql
+    if(pos in sector_sql):
+        return "s"
+    if(pos in adres_sql):
+        return "l"
+    if(pos in bank_sql):
+        return "b"
+    return "k"
 
 def translate_order(order):
     switch={
@@ -68,16 +97,16 @@ def translate_attribute(raw_attribute):
        'Email': "email",
        'Telefoon nummer': "telefoonNr",
        'WebAdres': "webAdres",
-       'Personeelsbestanden': "personeelsbestanden",
+       'Aantal werknemers': "personeelsbestanden",
        'WCM': "wcm",
        'B2B': "b2b",
-       'Sector': "TODO",
-       'Adres': "TODO",
-       'Postcode': "TODO",
-       'Gemente': "TODO",
-       'BTW nr': "TODO",
-       'Omzet': "TODO",
-       'Balanstotaal': "TODO",
-       'Netto Toegevoegde Waarde': "TODO",
+       'Sector': "sector",
+       'Adres': "adres",
+       'Postcode': "postcode",
+       'Gemente': "gemeente",
+       'Bank ID': "bvdIDnr",
+       'Omzet': "omzet",
+       'Balanstotaal': "balanstotaal",
+       'Netto Toegevoegde Waarde': "nettoToegevoegdeWaarde",
        }
     return switch.get(raw_attribute)

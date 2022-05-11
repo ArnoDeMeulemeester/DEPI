@@ -46,7 +46,7 @@
         // create kmo item 
         let kmo = document.createElement("div");
         kmo.classList.add("KMO_overview_table_item")
-        kmo.classList.add("KMO_overview_table_item_score_"+avg_score(kmo_data_json[key].beursnotatie,kmo_data_json[key].duurzaamheid))
+        kmo.classList.add("KMO_overview_table_item_score_"+get_abc_score(((Number(kmo_data_json[key].beursnotatie)+Number(kmo_data_json[key].duurzaamheid))/2)))
         kmo.setAttribute("id", kmo_data_json[key].onderneminsNr);
         kmo.innerText = kmo_data_json[key].naam
         // add onclick event 
@@ -143,8 +143,9 @@
         if(score === null){
             document.getElementById(elementID).innerText =  "Geen info"
         }else{
-            document.getElementById(elementID).innerText =  score
-            document.getElementById(elementID+"_container").classList.add("KMO_overview_info_item_score_"+score)
+            score_letter = get_abc_score(score)
+            document.getElementById(elementID).innerText = score_letter+" ("+ score+"%)"
+            document.getElementById(elementID+"_container").classList.add("KMO_overview_info_item_score_"+score_letter)
         }
     }
     function set_name_info_item(elementID,name,score1,score2){
@@ -156,10 +157,10 @@
         if(name === null){
             document.getElementById(elementID).innerText =  "Geen info"
         }else{
-            document.getElementById(elementID).innerText =  name
+            document.getElementById(elementID).innerText =  name+" ("+Math.round(((Number(score1)+Number(score2))/2))+"%)"
         }
         if(score1 !== null || score2 !== null){
-            document.getElementById(elementID+"_container").classList.add("KMO_overview_info_item_score_"+ avg_score(score1,score2))
+            document.getElementById(elementID+"_container").classList.add("KMO_overview_info_item_score_"+ get_abc_score(((Number(score1)+Number(score2))/2)))
         }
     }
     function set_location_info_item(elementID,location_object){
@@ -256,6 +257,11 @@
             return "C"
         }
     }
+    function get_abc_score(score){
+        if(score>=66) return "A"
+        if(score>=33) return "B"
+        return "C"
+    }
 
 
 
@@ -297,7 +303,7 @@
         reset_filter_overlay()
         // add new select 
         temp_selected_attribute = element.options[element.selectedIndex].value
-        if((["Menselijk Kapitaal","Natuurlijk Kapitaal","Omzet","Balanstotaal","Netto Toegevoegde Waarde"]).some(bool => temp_selected_attribute === bool)){//temp_selected_attribute
+        if((["Menselijk Kapitaal","Natuurlijk Kapitaal","Omzet","Balanstotaal","Netto Toegevoegde Waarde","Aantal werknemers"]).some(bool => temp_selected_attribute === bool)){//temp_selected_attribute
             // add number/score select
             let new_select = document.createElement("select");
             new_select.classList.add("KMO_overview_search_filter_item")
@@ -340,27 +346,8 @@
         reset_filter3()
         // add new select 
         console.log(element.options[element.selectedIndex].text);
-        if((["Omzet","Balanstotaal","Netto Toegevoegde Waarde"]).some(bool => temp_selected_attribute === bool)){
-            // if number 
-            document.getElementById("search_filter_container").appendChild(create_input_element())
-        }else{
-            // if score 
-            let new_select = document.createElement("select");
-            new_select.classList.add("KMO_overview_search_filter_item")
-            new_select.setAttribute("id", "select3");
-            // add onclick event 
-            new_select.addEventListener('change', function() {
-                score_select(this)
-            })
-
-            // addoptions
-            new_select.add(create_option_element(true,"select:","0"))
-            new_select.add(create_option_element(false,"A","A"))
-            new_select.add(create_option_element(false,"B","B"))
-            new_select.add(create_option_element(false,"C","C"))
-
-            document.getElementById("search_filter_container").appendChild(new_select)
-        }
+        document.getElementById("search_filter_container").appendChild(create_input_element())
+       
     }
     
     function text_select(element){
@@ -530,7 +517,7 @@
                 <option value="Email">Email</option>
                 <option value="Telefoon nummer">Telefoon nummer</option>
                 <option value="WebAdres">WebAdres</option>
-                <option value="Personeelsbestanden">Personeelsbestanden</option> 
+                <option value="Aantal werknemers">Aantal werknemers</option> 
                 <option value="WCM">WCM</option>
                 <option value="B2B">B2B</option>
                 <option value="Sector">Sector</option>
@@ -576,7 +563,7 @@
             <div class="KMO_overview_info_item" id="Info_5_container">Email: <br><span id="Info_5">Loading... </span></div>
             <div class="KMO_overview_info_item" id="Info_6_container">TelefoonNr: <br><span id="Info_6">Loading... </span></div>
             <div class="KMO_overview_info_item" id="Info_7_container">WebAdres: <br><span id="Info_7">Loading... </span></div>
-            <div class="KMO_overview_info_item" id="Info_8_container">Personeelsbestanden: <br><span id="Info_8">Loading... </span></div>
+            <div class="KMO_overview_info_item" id="Info_8_container">Aantal werknemers: <br><span id="Info_8">Loading... </span></div>
             <div class="KMO_overview_info_item" id="Info_9_container">WCM: <br><span id="Info_9">Loading... </span></div>
             <div class="KMO_overview_info_item" id="Info_12_container">B2B: <br><span id="Info_12">Loading... </span></div>
             <div class="KMO_overview_info_item" id="Info_13_container">Sector: <br><span id="Info_13">Loading... </span></div>
