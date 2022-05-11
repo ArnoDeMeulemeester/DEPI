@@ -15,8 +15,8 @@ def find_all_substrings(string, sub):
 class WebsiteSpider(CrawlSpider):
 
     name = "webcrawler"
-    allowed_domains = ["www.volckaert.be"]
-    start_urls = ["www.volckaert.be"]
+    allowed_domains = ["http://www.quartes.com/"]
+    start_urls = ["http://www.quartes.com/"]
     rules = [Rule(LinkExtractor(), follow=True, callback="check_buzzwords")]
 
     crawl_count = 0
