@@ -2,7 +2,7 @@ from asyncio.windows_events import NULL
 from distutils.log import debug
 from flask import Flask, render_template, request, url_for, Response, stream_with_context
 from xlReader import test,GetxcelDataLogs,GetxcelData,GetxcelDataStarted
-from sqlFuncions import translate_attribute,translate_search_to_sql
+from sqlFuncions import translate_search_to_sql
 import json
 import random
 import time
@@ -44,16 +44,17 @@ def KMOOverviewBase():
     db_data_KMO.set_index('onderneminsNr',inplace=True)
     db_data_sector = _MYSQL('''SELECT * FROM dep.Sector limit 100;''')
     db_data_sector.set_index('sectorID',inplace=True)
-    # replace score numbers with leters 
-    db_data_KMO['beursnotatie'].replace(to_replace='1', value='A',inplace=True)
-    db_data_KMO['beursnotatie'].replace(to_replace='2', value='B',inplace=True)
-    db_data_KMO['beursnotatie'].replace(to_replace='3', value='C',inplace=True)
-    db_data_KMO['duurzaamheid'].replace(to_replace='1', value='A',inplace=True)
-    db_data_KMO['duurzaamheid'].replace(to_replace='2', value='B',inplace=True)
-    db_data_KMO['duurzaamheid'].replace(to_replace='3', value='C',inplace=True)
     #return db_data_KMO.to_json(orient="index",force_ascii=True,index=True)
-    return render_template('KMOOverview.html', kmo_data=db_data_KMO.to_json(orient="index",force_ascii=True,index=True), sector_data=db_data_sector.to_json(orient="index",force_ascii=True,index=True), baseurl=request.base_url)
+    return render_template('KMO_overview.html', kmo_data=db_data_KMO.to_json(orient="index",force_ascii=True,index=True), sector_data=db_data_sector.to_json(orient="index",force_ascii=True,index=True), baseurl=request.base_url)
     #return render_template('KMOOverview.html', tables=[db_data.to_html(classes='data')], titles=db_data.columns.values)
+
+# KMO Overview pages 
+@app.route('/SectorOverview')
+def SectorOverviewBase():
+    db_data_sector = _MYSQL('''SELECT * FROM dep.Sector limit 100;''')
+    db_data_sector.set_index('sectorID',inplace=True)
+    return render_template('sector_overview.html', sector_data=db_data_sector.to_json(orient="index",force_ascii=True,index=True), baseurl=request.base_url)
+
 
 
 # Sector Overview pages
@@ -80,12 +81,6 @@ def searchKMOs():
     
     db_data_KMO = _MYSQL(translate_search_to_sql(raw_data))
     db_data_KMO.set_index('onderneminsNr',inplace=True)
-    db_data_KMO['beursnotatie'].replace(to_replace='1', value='A',inplace=True)
-    db_data_KMO['beursnotatie'].replace(to_replace='2', value='B',inplace=True)
-    db_data_KMO['beursnotatie'].replace(to_replace='3', value='C',inplace=True)
-    db_data_KMO['duurzaamheid'].replace(to_replace='1', value='A',inplace=True)
-    db_data_KMO['duurzaamheid'].replace(to_replace='2', value='B',inplace=True)
-    db_data_KMO['duurzaamheid'].replace(to_replace='3', value='C',inplace=True)
     # check if need to reorder
     return db_data_KMO.to_json(orient="index",force_ascii=True,index=True)
     #return sql_statement
