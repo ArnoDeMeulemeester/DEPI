@@ -29,9 +29,16 @@ class WebsiteSpider(CrawlSpider):
         crawl_count = self.__class__.crawl_count
 
         wordlist = [
-            "energiebron",
-            "waterverbruik",
-            "broikasgas",
+            "energiebron", "energie vermindering", "energie reductie", "energie-intensiteit", "energiegebruik", "energieverbruik",
+            "waterverbruik", "waterbron", "wateronttrekking", "waterafvoer", "watergebruik", "afvalwater", "grondwater", 
+            "broeikasgas", "CO2", "CO²", "CO2", 
+            "emissie", "uitstoot", "vervuiling", "zure regen", "uitstoot", "fijnstof", "fijn stof", "vervuilende stof", "filtertechniek", "luchtzuiverheid", "zuiveringstechnologie",
+            "impact", "milieu-impact", "impact op het milieu", "milieu impact", "milieu", "mobiliteit", "vervoer", "verplaatsing", "fiets", "auto", "staanplaatsen", "parking", "openbaar vervoer", "klimaatimpact", "impact op het klimaat", "klimaatsverandering", "green deal", 
+            "gezondheid", "reclyclage", "recycleren", "biodiversiteit", "afval", "afvalproductie", "vervuiling", 
+            "klimaat", "klimaatsverandering", "klimaatopwarming", "opwarming", "scope",
+             "milieubeleid", "hernieuwbare energie", "verspilling", "milieucriteria", "planeet", "klimaatsbeleid", "milieunormen", 
+             "schoon water en sanitair","betaalbare en duurzame energie", "duurzame steden en gemeenschappen", "verantwoorde consumptie en productie", "klimaatactie", "leven in het water", 'leven op het land',
+            "duurzaamheidsdoelstellingen", "ontwikkelingsdoelen", "ontwikkelingsdoelstelling", "duurzaamheidsrapportering", 
             ]
 
         url = response.url
