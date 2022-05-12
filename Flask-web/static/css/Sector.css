@@ -93,18 +93,21 @@
 }
 
 .Sector_overview_info_item_score_A{
-    border: 2px solid #56862e!important;
-    background-color: #00c8507e!important;
+    border: 2px solid #5D7F64!important;
+    background-color: #BAFFC9!important;
 }
 .Sector_overview_info_item_score_B{
-    border: 2px solid #a57109!important;
-    background-color: #ffbb3354!important;
+    border: 2px solid #7F7F5D!important;
+    background-color: #FFFFBA!important;
 }
 .Sector_overview_info_item_score_C{
-    border: 2px solid #8b323f!important;
-    background-color: #ff444479!important;
+    border: 2px solid #7F6F5D!important;
+    background-color: #FFDFBA!important;
 }
-
+.Sector_overview_info_item_score_D{
+    border: 2px solid #7F5A5E!important;
+    background-color: #FFB3BA!important;
+}
 .Sector_overview_info_item span{
     width: 100%;
     display: block;

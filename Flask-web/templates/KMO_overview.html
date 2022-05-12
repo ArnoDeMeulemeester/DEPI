@@ -140,6 +140,7 @@
         document.getElementById(elementID+"_container").classList.remove("KMO_overview_info_item_score_A")
         document.getElementById(elementID+"_container").classList.remove("KMO_overview_info_item_score_B")
         document.getElementById(elementID+"_container").classList.remove("KMO_overview_info_item_score_C")
+        document.getElementById(elementID+"_container").classList.remove("KMO_overview_info_item_score_D")
         // add new info 
         if(score === null){
             document.getElementById(elementID).innerText =  "Geen info"
@@ -154,6 +155,7 @@
         document.getElementById(elementID+"_container").classList.remove("KMO_overview_info_item_score_A")
         document.getElementById(elementID+"_container").classList.remove("KMO_overview_info_item_score_B")
         document.getElementById(elementID+"_container").classList.remove("KMO_overview_info_item_score_C")
+        document.getElementById(elementID+"_container").classList.remove("KMO_overview_info_item_score_D")
         // add new info 
         if(name === null){
             document.getElementById(elementID).innerText =  "Geen info"
@@ -247,21 +249,11 @@
             });
         }
     }
-    function avg_score(score1,score2){
-        if(score1 === "A" && score2 === "A"){
-            return "A"
-        }else if(  ((score1 === "B" && score2 === "A") || (score1 === "A" && score2 === "B")) 
-                                                       || 
-                   ((score1 === "A" && score2 === "C") || (score1 === "C" && score2 === "A")) ){
-            return "B"
-        }else{
-            return "C"
-        }
-    }
     function get_abc_score(score){
-        if(score>=66) return "A"
-        if(score>=33) return "B"
-        return "C"
+        if(score>=75) return "A"
+        if(score>=50) return "B"
+        if(score>=25) return "C"
+        return "D"
     }
 
 
