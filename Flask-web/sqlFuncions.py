@@ -13,13 +13,17 @@ def translate_search_to_sql(raw_data):
     global bank_sql
     global first
     sql_statement = 'SELECT * FROM dep.KMO k'
+    joins_added = [False,False,False]
     for item in raw_data:
-        if(item in sector_sql):
+        if((item in sector_sql) and (joins_added[0] is not True)):
            sql_statement+=" INNER JOIN dep.Sector s ON k.ibid = s.sectorID "
-        if(item in adres_sql):
+           joins_added[0] = True
+        if((item in adres_sql) and (joins_added[1] is not True)):
            sql_statement+=" INNER JOIN dep.Locatie l ON k.LocatieID = l.adres "
-        if(item in bank_sql):
+           joins_added[1] = True
+        if((item in bank_sql) and (joins_added[2] is not True)):
            sql_statement+=" INNER JOIN dep.Balans b ON k.BalansID = b.bvdIDnr "
+           joins_added[2] = True
     first = True
     # add all where sql 
     for pos in np.concatenate([where_sql,sector_sql,adres_sql,bank_sql]):
