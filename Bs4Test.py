@@ -24,7 +24,7 @@ for row in ws.rows:
 
 # url site
     try:
-      url = 'https://www.bing.com/search?q=' + naam + "+Belgie+Website"
+      url = 'https://www.bing.com/search?q=' + naam + "+website+Belgie"
       res = requests.get(url)
       # Connect to URL
       html = requests.get(url, headers={"User-Agent": "Requests"})
@@ -37,6 +37,7 @@ for row in ws.rows:
       # wbwrite.save("C:/Users/arvid/Documents/xcel/test.xlsx")
       wbwrite.save("C:/Users/arnod/Documents/HoGent/wbwrite.xlsx")
       r += 1
-    except:
+    except Exception as e:
+      print(e)
       wbwritesheet.cell(row=r, column=c).value = "website niet gevonden"
       r += 1
