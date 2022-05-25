@@ -3,7 +3,7 @@ import time
 import requests
 from bs4 import BeautifulSoup
 import operator
-from collections import Counter
+from collections.abc import Counter
 import pandas as pd
 
 #read excel file

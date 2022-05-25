@@ -7,19 +7,20 @@ from openpyxl import Workbook, load_workbook
 import time
 import csv
 
-wbwrite = load_workbook("C:/Users/arvid/Documents/xcel/test.xlsx")
+#wbwrite = load_workbook("C:/Users/arvid/Documents/xcel/test.xlsx")
+wbwrite = load_workbook("C:/Users/arnod/Documents/HoGent/wbwrite.xlsx")
 wbwritesheet = wbwrite.active
 
 n_wordlist = ["energiebron", "energie vermindering", "energie reductie", "energie-intensiteit", "energiegebruik", "energieverbruik",
-              "waterverbruik", "waterbron", "wateronttrekking", "waterafvoer", "watergebruik", "afvalwater", "grondwater",
-              "broeikasgas", "CO2", "CO²",
-              "emissie", "uitstoot", "vervuiling", "zure regen", "uitstoot", "fijnstof", "fijn stof", "vervuilende stof", "filtertechniek", "luchtzuiverheid", "zuiveringstechnologie",
-              "impact", "milieu-impact", "impact op het milieu", "milieu impact", "milieu", "mobiliteit", "vervoer", "verplaatsing", "fiets", "auto", "staanplaatsen", "parking", "openbaar vervoer", "klimaatimpact", "impact op het klimaat", "klimaatsverandering", "green deal",
-              "gezondheid", "reclyclage", "recycleren", "biodiversiteit", "afval", "afvalproductie", "vervuiling",
-              "klimaat", "klimaatsverandering", "klimaatopwarming", "opwarming", "scope",
-              "milieubeleid", "hernieuwbare energie", "verspilling", "milieucriteria", "planeet", "klimaatsbeleid", "milieunormen",
-              "klimaatactie", "leven in het water", 'leven op het land',
-              "duurzaamheidsdoelstellingen", "ontwikkelingsdoelen", "ontwikkelingsdoelstelling", "duurzaamheidsrapportering"]  # 70
+            "waterverbruik", "waterbron", "wateronttrekking", "waterafvoer", "watergebruik", "afvalwater", "grondwater",
+            "broeikasgas", "CO2", "CO²",
+            "emissie", "uitstoot", "vervuiling", "zure regen", "uitstoot", "fijnstof", "fijn stof", "vervuilende stof", "filtertechniek", "luchtzuiverheid", "zuiveringstechnologie",
+            "impact", "milieu-impact", "impact op het milieu", "milieu impact", "milieu", "mobiliteit", "vervoer", "verplaatsing", "fiets", "auto", "staanplaatsen", "parking", "openbaar vervoer", "klimaatimpact", "impact op het klimaat", "klimaatsverandering", "green deal",
+            "gezondheid", "reclyclage", "recycleren", "biodiversiteit", "afval", "afvalproductie", "vervuiling",
+            "klimaat", "klimaatsverandering", "klimaatopwarming", "opwarming", "scope",
+            "milieubeleid", "hernieuwbare energie", "verspilling", "milieucriteria", "planeet", "klimaatsbeleid", "milieunormen",
+            "klimaatactie", "leven in het water", 'leven op het land',
+            "duurzaamheidsdoelstellingen", "ontwikkelingsdoelen", "ontwikkelingsdoelstelling", "duurzaamheidsrapportering"]  # 70
 
 m_wordlist = []
 
@@ -27,7 +28,7 @@ n = 0
 m = 0
 
 d = dict()
-with open('C:/Users/arvid/Documents/GitHub/DEPI/WebsiteWordsScaper/wordlist_scrapper/wordlist.csv', 'r') as csv_file:
+with open('C:/Users/arnod/Documents/HoGent/2/DEPI/WebsiteWordsScaper/wordlist_scrapper/wordlist.csv', 'r') as csv_file:
     csv_reader = csv.reader(csv_file)
 
     for line in csv_reader:
@@ -52,5 +53,5 @@ with open('C:/Users/arvid/Documents/GitHub/DEPI/WebsiteWordsScaper/wordlist_scra
     
     wbwritesheet.cell(row=1, column=1).value = n_perc
     wbwritesheet.cell(row=1, column=2).value = m_perc
-    wbwrite.save("C:/Users/arvid/Documents/xcel/test.xlsx")
+    wbwrite.save("C:/Users/arnod/Documents/HoGent/wbwrite.xlsx")
 
